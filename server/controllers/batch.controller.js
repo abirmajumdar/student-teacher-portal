@@ -3,6 +3,7 @@ const Batch = require('../models/batch.model.js');
 const Teacher = require('../models/teacher.model.js');
 const Course = require('../models/course.model.js');
 const mongoose = require('mongoose')
+
 const createBatch = async (req, res) => {
   try {
     const { title, description, email } = req.body;
@@ -27,7 +28,7 @@ const createBatch = async (req, res) => {
     const existingTeacher = await Teacher.findOne({ email });
 
     if (!existingTeacher) {
-      return res.status(404).json({ message: "Teacher not found" });
+      return res.status(400).json({ message: "Teacher not found" });
     }
 
     const batchData = {

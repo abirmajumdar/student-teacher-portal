@@ -3,7 +3,7 @@ import { useState } from 'react'
 import BASE_URL from '../utils/utils.js'
 import axios from 'axios'
 import { ToastContainer,toast,Bounce } from 'react-toastify'
-
+import {useNavigate} from 'react-router-dom'
 
 function UploadModal(props) {
 
@@ -11,16 +11,20 @@ function UploadModal(props) {
   const [description, setDescription] = useState('')
   const [image, setImage] = useState('')
   const [isShowModel,setShowModel] = useState()
+  // const [email,setEmail] = useState()
+  const navigate = useNavigate()
 
   const submitHandler = async (e) => {
     console.log(BASE_URL)
     console.log(image.name)
     e.preventDefault()
+    console.log(localStorage.getItem('teacher'))
+    console.log((title))
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("image", image); // ⬅️ real file
-    formData.append("email", "rupali02@gmail.com");
+    formData.append("email", JSON.parse(localStorage.getItem('teacher')) );
     const res = await axios.post(`${BASE_URL}/batch/create-batch`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -39,6 +43,7 @@ function UploadModal(props) {
         transition: Bounce,
         onClose: () => {
           props.closeModal()
+          navigate('/dashboard')
         }
         
       });
@@ -126,7 +131,7 @@ function UploadModal(props) {
             </div>
           </div>
         </div>
-
+        {/* <input type="email" value={email} onChange={(e)=>{setEmail(e.target.value)}} /> */}
         {/* Buttons */}
         <div className="flex justify-end gap-4">
           <button
