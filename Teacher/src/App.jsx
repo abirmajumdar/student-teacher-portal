@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage'
 import HeroSectionPage from './pages/HeroSectionPage'
 import CourseUpload from './pages/CourseUpload'
 import CoursesPage from './pages/CoursesPage'
+import AllBatches from './pages/AllBatches'
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path='/dashboard' element={<HeroSectionPage/>} />
         <Route path='/course-upload/:id' element={<CourseUpload/>} />
         <Route path='/view-courses/:id' element={<CoursesPage/>} />
+        <Route path='all-batches' element={<AllBatches/>} />
         
       </Routes>
     </BrowserRouter>

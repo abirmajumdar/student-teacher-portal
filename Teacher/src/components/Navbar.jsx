@@ -19,6 +19,10 @@ const Navbar = () => {
         navigate('/')
         
     }
+    const showAllBatches=async(e)=>{
+        e.preventDefault()
+        navigate('/all-batches')
+    }
 
     return (
         <>
@@ -54,9 +58,12 @@ const Navbar = () => {
 
                 <div className={`transition-all duration-300 ease-in-out md:flex md:items-center ${isOpen ? 'block' : 'hidden'}`}>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-6">
-                        <Link to="/" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
+                        <Link to="/dashboard" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
                             Home
                         </Link>
+                        <div className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500" onClick={showAllBatches}>
+                            All Batches
+                        </div>
                         <div className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500" onClick={()=>{setisModalOpen(true)}}>
                             Add Batches
                         </div>

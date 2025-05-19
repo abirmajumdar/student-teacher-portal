@@ -13,6 +13,7 @@ import 'react-phone-number-input/style.css'
 import { useRef } from "react";
 import axios from 'axios'
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import BASE_URL from '../../../Teacher/utils/utils';
 
 const countryOptions = [
   { name: "United States", code: "+1", flag: "🇺🇸" },
@@ -34,7 +35,7 @@ const LandingPage = () => {
 
   const sendOtp = async () => {
 
-    const res = await axios.post('http://localhost:8000/otp/send-otp', { email })
+    const res = await axios.post(`${BASE_URL}/otp/send-otp`, { email })
     console.log(res)
     document.getElementById('my_modal_1').showModal()
   }
@@ -67,7 +68,7 @@ const LandingPage = () => {
     console.log("OTP to send:", finalOtp);
     console.log(typeof (finalOtp))
     try {
-      const res = await axios.post('http://localhost:8000/otp/verify-otp', { email: email, otp: finalOtp })
+      const res = await axios.post(`${BASE_URL}/otp/verify-otp`, { email: email, otp: finalOtp })
       toast.success(res.data.message, {
         position: "top-center",
         autoClose: 5000,

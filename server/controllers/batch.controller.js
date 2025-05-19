@@ -78,11 +78,27 @@ const getAllBatch = async (req, res) => {
 
 const getAllBatchesByTeacher = async (req, res) => {
   try {
-    const {teacherId} = req.body;
+    const { email } = req.body;
 
-    const batches = await Batch.find({ createdBy: teacherId })
-      .populate('Course', 'title description') // Populate course details
-      .sort({ createdAt: -1 }); // Optional: latest first
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Teacher email is required',
+      });
+    }
+
+    // Find teacher by email
+    const teacher = await Teacher.findOne({ email });
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'Teacher not found',
+      });
+    }
+
+    // Find batches created by the teacher
+    const batches = await Batch.find({ createdBy: teacher._id })
+     
 
     res.status(200).json({
       success: true,
@@ -98,7 +114,6 @@ const getAllBatchesByTeacher = async (req, res) => {
     });
   }
 };
-
 
 const addCourse = async (req, res) => {
   

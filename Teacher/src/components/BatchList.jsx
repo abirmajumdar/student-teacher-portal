@@ -9,7 +9,9 @@ const BatchList = () => {
   useEffect(() => {
     const fetchBatches = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/batch/get-all-batches`);
+        const email = JSON.parse(localStorage.getItem('teacher'))
+        console.log(email)
+        const res = await axios.post(`${BASE_URL}/batch/get-all-batches-by-teacher`,{email});
         setBatches(res.data.data); // assuming your response has { data: [batches] }
       } catch (error) {
         console.error("Error fetching batches:", error);
