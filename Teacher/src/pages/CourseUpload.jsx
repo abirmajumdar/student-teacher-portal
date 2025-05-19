@@ -1,11 +1,13 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_URL from '../utils/utils';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
+import { ToastContainer, toast, Bounce } from 'react-toastify'
 
 const CourseUpload = () => {
-    const [batches,setBatches] = useState([])
-    const {id} = useParams()
+    const [batches, setBatches] = useState([])
+    const { id } = useParams()
+    const navigate = useNavigate()
     useEffect(() => {
         const fetchBatches = async () => {
             try {
@@ -66,7 +68,20 @@ const CourseUpload = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            alert('Course added successfully!');
+            // alert('Course added successfully!');
+            toast.success(response.data.message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+                onClose: () => { navigate('/dashboard') }
+            });
+
         } catch (err) {
             setError('Failed to add course. Please try again.');
             console.log(err)
@@ -174,10 +189,23 @@ const CourseUpload = () => {
                         className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                     >
                         {loading ? 'Uploading...' : 'Add Course'}
-                        
+
                     </button>
                 </div>
             </form>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+            />
         </div>
     );
 };

@@ -58,11 +58,11 @@ const Navbar = () => {
                             Home
                         </Link>
                         <div className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500" onClick={()=>{setisModalOpen(true)}}>
-                            New Batches
+                            Add Batches
                         </div>
-                        <Link to="/notification" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
+                        {/* <Link to="/notification" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
                             Notification
-                        </Link>
+                        </Link> */}
                     </div>
 
                     <div className="ml-0 mt-3 md:ml-4 md:mt-0">

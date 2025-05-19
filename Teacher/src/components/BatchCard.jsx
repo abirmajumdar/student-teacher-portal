@@ -3,7 +3,24 @@ import { useNavigate } from "react-router-dom";
 
 const BatchCard = ({ batch }) => {
   const navigate = useNavigate();
-
+  const showCourses = () => {
+    if (localStorage.getItem('token')) {
+      navigate(`/view-courses/${batch._id}`)
+    }
+    else {
+      toast.error('Login to see courses', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+    }
+  }
   return (
     <div className="bg-white shadow-md rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300 flex flex-col w-full max-w-md mx-auto">
       {/* Image */}
@@ -46,7 +63,7 @@ const BatchCard = ({ batch }) => {
             ➕ Add Course
           </button>
           <button
-            onClick={() => navigate(`/view-courses/${batch._id}`)}
+            onClick={showCourses}
             className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition text-sm mt-2 sm:mt-0"
           >
             📄 View Courses

@@ -6,7 +6,7 @@ import { ToastContainer,toast,Bounce } from 'react-toastify'
 import {useNavigate} from 'react-router-dom'
 
 function UploadModal(props) {
-
+  const [batchpassword,setBatchPassword] =useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [image, setImage] = useState('')
@@ -25,6 +25,7 @@ function UploadModal(props) {
     formData.append("description", description);
     formData.append("image", image); // ⬅️ real file
     formData.append("email", JSON.parse(localStorage.getItem('teacher')) );
+    formData.append('password',batchpassword)
     const res = await axios.post(`${BASE_URL}/batch/create-batch`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -80,6 +81,22 @@ function UploadModal(props) {
                 placeholder="Enter batch name"
                 value={title}
                 onChange={(e) => { setTitle(e.target.value) }}
+                className="block w-full rounded-md border border-gray-300 px-4 py-2 text-base text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Batch Password *
+            </label>
+            <div className="mt-2">
+              <input
+                id="batchpassword"
+                name="username"
+                type="text"
+                placeholder="Enter batch password"
+                value={batchpassword}
+                onChange={(e) => { setBatchPassword(e.target.value) }}
                 className="block w-full rounded-md border border-gray-300 px-4 py-2 text-base text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>

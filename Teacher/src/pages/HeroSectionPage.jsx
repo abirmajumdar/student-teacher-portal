@@ -5,10 +5,12 @@ import ProtectedAuth from './ProtectedAuth'
 
 export default function HeroSectionPage() {
   return (
-    <ProtectedAuth>
+    <div>
+      <ProtectedAuth>
       <Navbar />
       <BatchList />
     </ProtectedAuth>
 
+    </div>
   )
 }

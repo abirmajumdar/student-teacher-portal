@@ -179,7 +179,7 @@ const LandingPage = () => {
                   className="btn bg-blue-400 text-white hover:bg-blue-500 join-item px-5"
                   onClick={sendOtp}
                 >
-                  Join
+                  Login
                 </button>
 
               </div>
