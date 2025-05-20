@@ -5,12 +5,14 @@ const mongoose = require('mongoose');
 const router = require("./routers/otp.routes.js");
 const cloudinary = require('cloudinary').v2
 const fileUpload =require('express-fileupload') ;
-
+const path = require('path')
 
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload({ useTempFiles: true }));
+// app.use(fileUpload({ useTempFiles: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(cors())
 
 dotenv.config()

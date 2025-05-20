@@ -2,6 +2,7 @@ const cloudinary = require('cloudinary').v2;
 const Batch = require('../models/batch.model.js');
 const Teacher = require('../models/teacher.model.js');
 const Course = require('../models/course.model.js');
+const Pdf = require('../models/pdf.model.js')
 const mongoose = require('mongoose')
 
 const createBatch = async (req, res) => {
@@ -145,7 +146,7 @@ const addCourse = async (req, res) => {
       resource_type: resourceType,
       folder: 'courses',
     });
-
+    
     const newCourse = await Course.create({
       title,
       contentType,
@@ -231,7 +232,37 @@ const addCourse = async (req, res) => {
 //     return res.status(500).json({ message: 'Server error while adding course.' });
 //   }
 // };
+const pdfUpload =  async(req, res) => {
+  const { batchId } = req.params;
+  const { title } = req.body;
+  const pdf = req.file.path; 
 
+  if (!pdf) {
+    return res.status(400).json({ message: 'No PDF file uploaded.' });
+  }
+
+  try {
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: 'Batch not found.' });
+    }
+
+    const newPdf = await Pdf.create({
+      title,
+      pdf,
+      batch: batchId,
+    });
+
+    batch.pdfs.push(newPdf._id);
+    await batch.save();
+
+    console.log('PDF uploaded');
+    return res.status(201).json({ message: 'PDF uploaded successfully.', pdf: newPdf });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: 'Server error while uploading PDF.' });
+  }
+};
 
 
 const getCoursesByBatch = async (req, res) => {
@@ -273,4 +304,16 @@ const verifyPassword = async (req, res) => {
   }
 };
 
-module.exports = {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse,getCoursesByBatch,verifyPassword};
+const getPdfByBatchId =async(req,res)=>{
+  try {
+    const batchId = req.params.id;
+
+    const pdfs = await Pdf.find({ batch: batchId }).sort({ createdAt: -1 });
+
+    res.status(200).json({ pdfs });
+  } catch (error) {
+    console.error('Error fetching PDFs:', error);
+    res.status(500).json({ message: 'Server error fetching PDFs' });
+  }
+}
+module.exports = {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse,getCoursesByBatch,verifyPassword,pdfUpload,getPdfByBatchId};

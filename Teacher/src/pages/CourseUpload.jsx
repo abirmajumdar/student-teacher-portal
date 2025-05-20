@@ -1,36 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BASE_URL from '../utils/utils';
-import { useParams,useNavigate } from 'react-router-dom';
-import { ToastContainer, toast, Bounce } from 'react-toastify'
+import { useParams, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
 
 const CourseUpload = () => {
-    const [batches, setBatches] = useState([])
-    const { id } = useParams()
-    const navigate = useNavigate()
-    useEffect(() => {
-        const fetchBatches = async () => {
-            try {
-                const res = await axios.get(`${BASE_URL}/batch/get-all-batches`);
-                setBatches(res.data.data); // assuming your response has { data: [batches] }
-            } catch (error) {
-                console.error("Error fetching batches:", error);
-            }
-        };
-
-        fetchBatches();
-    }, []);
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: '',
         contentType: 'video',
-        batchId: '',
         email: '',
         content: null,
         textContent: '',
     });
+
+    const [pdfFile, setPdfFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [pdfTitle, setPdfTitle] = useState('');
 
+    // Handlers for course upload form
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -44,17 +34,16 @@ const CourseUpload = () => {
         setFormData((prev) => ({ ...prev, textContent: e.target.value }));
     };
 
-    const handleSubmit = async (e) => {
-        console.log(id)
+    const handleCourseSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
-        const { title, contentType, batchId, email, content, textContent } = formData;
         const form = new FormData();
+
+        const { title, contentType, email, content, textContent } = formData;
         form.append('title', title);
         form.append('contentType', contentType);
-        form.append('batchId', batchId);
+        form.append('batchId', id); // use batchId from URL
         form.append('email', email);
         if (contentType === 'text') {
             form.append('textContent', textContent);
@@ -64,148 +53,145 @@ const CourseUpload = () => {
 
         try {
             const response = await axios.post(`${BASE_URL}/batch/add-course/${id}`, form, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
-            // alert('Course added successfully!');
             toast.success(response.data.message, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
+                position: 'top-center',
+                autoClose: 4000,
+                theme: 'dark',
                 transition: Bounce,
-                onClose: () => { navigate('/dashboard') }
+                onClose: () => navigate('/dashboard'),
             });
-
         } catch (err) {
-            setError('Failed to add course. Please try again.');
-            console.log(err)
+            setError('Failed to add course.');
         } finally {
             setLoading(false);
         }
     };
 
+    // Handlers for PDF upload
+    const handlePdfChange = (e) => {
+        setPdfFile(e.target.files[0]);
+    };
+
+    const handlePdfSubmit = async (e) => {
+        e.preventDefault();
+        if (!pdfFile) {
+            toast.error('Please select a PDF file.', { theme: 'colored' });
+            return;
+        }
+        const pdfForm = new FormData();
+        pdfForm.append('pdf', pdfFile);
+        pdfForm.append('title', pdfTitle);
+
+        try {
+            const res = await axios.post(`${BASE_URL}/batch/upload-pdf/${id}`, pdfForm, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            toast.success('PDF uploaded successfully!', { theme: 'colored' });
+        } catch (err) {
+            toast.error('Failed to upload PDF.', { theme: 'colored' });
+        }
+    };
+
     return (
-        <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold text-center mb-4">Add New Course</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">Course Title</label>
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
+        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-10">
+            <h2 className="text-2xl font-semibold text-center text-indigo-700">📚 Course & PDF Upload</h2>
+
+            {/* Course Upload Form */}
+            <form onSubmit={handleCourseSubmit} className="space-y-4 border-b pb-6">
+                <h3 className="text-lg font-bold text-indigo-600">Add Course</h3>
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Course Title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                    className="w-full border px-3 py-2 rounded-md"
+                />
+                <select
+                    name="contentType"
+                    value={formData.contentType}
+                    onChange={handleChange}
+                    required
+                    className="w-full border px-3 py-2 rounded-md"
+                >
+                    <option value="video">Video</option>
+                    <option value="pdf">PDF</option>
+                    <option value="text">Text</option>
+                </select>
+
+                {formData.contentType === 'text' ? (
+                    <textarea
+                        name="textContent"
+                        rows="4"
+                        placeholder="Enter text content"
+                        value={formData.textContent}
+                        onChange={handleTextChange}
                         required
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="w-full border px-3 py-2 rounded-md"
                     />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="contentType" className="block text-sm font-medium text-gray-700">Content Type</label>
-                    <select
-                        id="contentType"
-                        name="contentType"
-                        value={formData.contentType}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    >
-                        <option value="video">Video</option>
-                        <option value="pdf">PDF</option>
-                        <option value="text">Text</option>
-                    </select>
-                </div>
-
-                {formData.contentType !== 'text' ? (
-                    <div className="mb-4">
-                        <label htmlFor="content" className="block text-sm font-medium text-gray-700">Upload Content</label>
-                        <input
-                            type="file"
-                            id="content"
-                            name="content"
-                            onChange={handleFileChange}
-                            required
-                            className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
                 ) : (
-                    <div className="mb-4">
-                        <label htmlFor="textContent" className="block text-sm font-medium text-gray-700">Text Content</label>
-                        <textarea
-                            id="textContent"
-                            name="textContent"
-                            value={formData.textContent}
-                            onChange={handleTextChange}
-                            required
-                            rows="4"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
+                    <input
+                        type="file"
+                        onChange={handleFileChange}
+                        accept={formData.contentType === 'pdf' ? 'application/pdf' : 'video/*'}
+                        className="w-full border px-3 py-2 rounded-md"
+                        required
+                    />
                 )}
 
-                {/* <div className="mb-4">
-                    <label htmlFor="batchId" className="block text-sm font-medium text-gray-700">Select Batch</label>
-                    <select
-                        id="batchId"
-                        name="batchId"
-                        value={formData.batchId}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    >
-                        <option value="">--Select Batch--</option>
-            {batches.map((batch) => (
-              <option key={batch._id} value={batch._id}>{batch.title}</option>
-            ))}
-                    </select>
-                </div> */}
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Teacher's Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full border px-3 py-2 rounded-md"
+                />
 
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Teacher's Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                </div>
-
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-
-                <div className="mt-6">
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                    >
-                        {loading ? 'Uploading...' : 'Add Course'}
-
-                    </button>
-                </div>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full py-2 rounded-md text-white font-semibold ${loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                >
+                    {loading ? 'Uploading...' : 'Add Course'}
+                </button>
             </form>
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick={false}
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                transition={Bounce}
-            />
+
+            {/* PDF Upload Form */}
+            <form onSubmit={handlePdfSubmit} className="space-y-4">
+                <h3 className="text-lg font-bold text-indigo-600">Upload PDF Only</h3>
+
+                <input
+                    type="text"
+                    placeholder="PDF Title"
+                    value={pdfTitle}
+                    onChange={(e) => setPdfTitle(e.target.value)}
+                    required
+                    className="w-full border px-3 py-2 rounded-md"
+                />
+
+                <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePdfChange}
+                    className="w-full border px-3 py-2 rounded-md"
+                    required
+                />
+
+                <button
+                    type="submit"
+                    className="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md"
+                >
+                    📄 Upload PDF
+                </button>
+            </form>
+
+
+            <ToastContainer />
         </div>
     );
 };

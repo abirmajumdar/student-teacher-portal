@@ -15,7 +15,8 @@ const batchSchema = new mongoose.Schema({
   password:{
     type:String
   },
-  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
+  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+  pdfs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pdf' }]
 }, { timestamps: true });
 
 const batchModel= mongoose.model('Batch', batchSchema);
