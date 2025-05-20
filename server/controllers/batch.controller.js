@@ -3,7 +3,13 @@ const Batch = require('../models/batch.model.js');
 const Teacher = require('../models/teacher.model.js');
 const Course = require('../models/course.model.js');
 const Pdf = require('../models/pdf.model.js')
+const Quiz = require('../models/quiz.model');
+const QuizResult = require('../models/quizresult.model.js');
+const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 const createBatch = async (req, res) => {
   try {
@@ -316,4 +322,118 @@ const getPdfByBatchId =async(req,res)=>{
     res.status(500).json({ message: 'Server error fetching PDFs' });
   }
 }
-module.exports = {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse,getCoursesByBatch,verifyPassword,pdfUpload,getPdfByBatchId};
+
+// controllers/quiz.controller.js
+
+
+const uploadQuiz = async (req, res) => {
+  const { batchId } = req.params;
+  const { title, questions } = req.body; // questions should be an array of objects
+
+  try {
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: 'Batch not found.' });
+    }
+
+    const newQuiz = await Quiz.create({
+      title,
+      batch: batchId,
+      questions, // assume validated on frontend
+    });
+
+    batch.quizzes.push(newQuiz._id);
+    await batch.save();
+
+    return res.status(201).json({ message: 'Quiz uploaded successfully.', quiz: newQuiz });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error uploading quiz.' });
+  }
+};
+
+const viewQuizTeacher=async(req,res)=>{
+  try {
+    const { batchId } = req.params;
+    const quizzes = await Quiz.find({ batch: batchId }).select('-__v').sort({ createdAt: -1 });
+    res.status(200).json({ success: true, quizzes });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to fetch quizzes', error: error.message });
+  }
+}
+
+
+// Student submits answers for a quiz
+const submitQuizAnswers = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authorization token missing' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    // return console.log(token)
+    const cleanToken = token.trim().replace(/^"|"$/g, '');
+
+
+    const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
+    const studentId = decoded.id;
+
+    const { quizId } = req.params;
+    const { answers } = req.body;
+
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found.' });
+    }
+
+    let score = 0;
+    const total = quiz.questions.length;
+
+    for (const question of quiz.questions) {
+      const studentAnswerObj = answers.find(a => a.questionId === question._id.toString());
+      if (studentAnswerObj && studentAnswerObj.answer === question.correctAnswer) {
+        score++;
+      }
+    }
+    const existingResult = await QuizResult.findOne({ quiz: quizId, student: studentId });
+
+if (existingResult) {
+  throw new Error('You already attempted the quiz.');
+}
+    const newResult = await QuizResult.create({
+      quiz: quizId,
+      student: studentId,
+      answers,
+      score,
+      total,
+    });
+
+    res.status(200).json({
+      message: 'Quiz submitted successfully.',
+      score,
+      total,
+      resultId: newResult._id,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error submitting quiz answers.' });
+  }
+};
+const getStudentQuizResults = async (req, res) => {
+  try {
+    const studentId = req.user._id; // authenticated user
+
+    const results = await QuizResult.find({ student: studentId })
+      .populate('quiz', 'title') // populate quiz title
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, results });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to fetch quiz results.' });
+  }
+};
+
+
+module.exports = {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse,getCoursesByBatch,verifyPassword,pdfUpload,getPdfByBatchId,uploadQuiz,viewQuizTeacher,submitQuizAnswers,getStudentQuizResults};

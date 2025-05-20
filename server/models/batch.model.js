@@ -16,7 +16,8 @@ const batchSchema = new mongoose.Schema({
     type:String
   },
   courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-  pdfs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pdf' }]
+  pdfs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pdf' }],
+  quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }]
 }, { timestamps: true });
 
 const batchModel= mongoose.model('Batch', batchSchema);

@@ -1,5 +1,5 @@
 const express = require('express')
-const {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId} = require('../controllers/batch.controller.js')
+const {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId,uploadQuiz,viewQuizTeacher,submitQuizAnswers,getStudentQuizResults} = require('../controllers/batch.controller.js')
 const multer  = require('multer')
 const fileUpload = require('express-fileupload');
 
@@ -29,5 +29,12 @@ router.post('/verify-batch-password',verifyPassword)
 router.post('/upload-pdf/:batchId', upload.single("pdf"), pdfUpload);
 
 router.get('/get-pdfs-by-batchid/:id', getPdfByBatchId);
+
+
+router.post('/upload-quiz/:batchId', uploadQuiz);
+router.get('/view-quiz-teacher/:batchId',viewQuizTeacher)
+
+router.post('/quiz/:quizId/submit', submitQuizAnswers);
+router.get('/quiz/results', getStudentQuizResults);
 
 module.exports = router
