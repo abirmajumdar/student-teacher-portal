@@ -31,7 +31,7 @@ export default function AuthPage() {
           progress: undefined,
           theme: "dark",
           transition: Bounce,
-          onClose:()=>{navigate('/dashboard')}
+          onClose:()=>{navigate('/')}
         });
         
         
@@ -68,7 +68,7 @@ export default function AuthPage() {
           progress: undefined,
           theme: "dark",
           transition: Bounce,
-          onClose:()=>{navigate('/dashboard')}
+          onClose:()=>{navigate('/')}
         });
       }
       catch(e){

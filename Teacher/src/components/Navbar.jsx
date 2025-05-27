@@ -16,7 +16,7 @@ const Navbar = () => {
         e.preventDefault()
         console.log("working")
         localStorage.clear()
-        navigate('/')
+        navigate('/auth')
         
     }
     const showAllBatches=async(e)=>{
@@ -26,7 +26,7 @@ const Navbar = () => {
 
     return (
         <>
-        <nav className="bg-white shadow">
+        <nav className="bg-slate-200 shadow">
             <div className="px-6 py-4 mx-auto md:flex md:justify-between md:items-center">
                 {/* Logo + Toggle */}
                 <div className="flex items-center justify-between">
@@ -58,7 +58,7 @@ const Navbar = () => {
 
                 <div className={`transition-all duration-300 ease-in-out md:flex md:items-center ${isOpen ? 'block' : 'hidden'}`}>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-6">
-                        <Link to="/dashboard" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
+                        <Link to="/" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
                             Home
                         </Link>
                         <div className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500" onClick={showAllBatches}>

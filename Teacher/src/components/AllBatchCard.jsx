@@ -56,6 +56,7 @@ const BatchCard = ({ batch }) => {
 
         {/* Action Buttons */}
         <div className="mt-5 flex flex-col sm:flex-row sm:gap-4">
+          
           <button
             onClick={showCourses}
             className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition text-sm mt-2 sm:mt-0"

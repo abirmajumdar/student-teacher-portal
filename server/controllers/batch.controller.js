@@ -5,6 +5,8 @@ const Course = require('../models/course.model.js');
 const Pdf = require('../models/pdf.model.js')
 const Quiz = require('../models/quiz.model');
 const QuizResult = require('../models/quizresult.model.js');
+const Assignment = require('../models/assignment.model.js');
+const AssignmentSubmission = require('../models/asssignmentsubmission.model.js');
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
@@ -13,7 +15,7 @@ dotenv.config()
 
 const createBatch = async (req, res) => {
   try {
-    const { title, description, email,password } = req.body;
+    const { title, description, email, password } = req.body;
 
     if (!title || !description || !email) {
       return res.status(401).json({ message: "Every field is required" });
@@ -45,8 +47,8 @@ const createBatch = async (req, res) => {
         public_id: uploadResult.public_id,
         url: uploadResult.secure_url
       },
-      createdBy: existingTeacher._id ,// store reference ID
-      password:password
+      createdBy: existingTeacher._id,// store reference ID
+      password: password
     };
 
     const newBatch = await Batch.create(batchData);
@@ -105,7 +107,7 @@ const getAllBatchesByTeacher = async (req, res) => {
 
     // Find batches created by the teacher
     const batches = await Batch.find({ createdBy: teacher._id })
-     
+
 
     res.status(200).json({
       success: true,
@@ -123,7 +125,7 @@ const getAllBatchesByTeacher = async (req, res) => {
 };
 
 const addCourse = async (req, res) => {
-  
+
   try {
     const { title, contentType, email } = req.body;
     const batchId = req.params.id
@@ -152,7 +154,7 @@ const addCourse = async (req, res) => {
       resource_type: resourceType,
       folder: 'courses',
     });
-    
+
     const newCourse = await Course.create({
       title,
       contentType,
@@ -238,10 +240,10 @@ const addCourse = async (req, res) => {
 //     return res.status(500).json({ message: 'Server error while adding course.' });
 //   }
 // };
-const pdfUpload =  async(req, res) => {
+const pdfUpload = async (req, res) => {
   const { batchId } = req.params;
   const { title } = req.body;
-  const pdf = req.file.path; 
+  const pdf = req.file.path;
 
   if (!pdf) {
     return res.status(400).json({ message: 'No PDF file uploaded.' });
@@ -310,7 +312,7 @@ const verifyPassword = async (req, res) => {
   }
 };
 
-const getPdfByBatchId =async(req,res)=>{
+const getPdfByBatchId = async (req, res) => {
   try {
     const batchId = req.params.id;
 
@@ -324,6 +326,18 @@ const getPdfByBatchId =async(req,res)=>{
 }
 
 // controllers/quiz.controller.js
+const getAssignmentByBatchId = async (req, res) => {
+  try {
+    const batchId = req.params.id;
+
+    const assignments = await Assignment.find({ batch: batchId }).sort({ createdAt: -1 });
+
+    res.status(200).json({ assignments });
+  } catch (error) {
+    console.error('Error fetching PDFs:', error);
+    res.status(500).json({ message: 'Server error fetching PDFs' });
+  }
+}
 
 
 const uploadQuiz = async (req, res) => {
@@ -352,7 +366,7 @@ const uploadQuiz = async (req, res) => {
   }
 };
 
-const viewQuizTeacher=async(req,res)=>{
+const viewQuizTeacher = async (req, res) => {
   try {
     const { batchId } = req.params;
     const quizzes = await Quiz.find({ batch: batchId }).select('-__v').sort({ createdAt: -1 });
@@ -399,9 +413,9 @@ const submitQuizAnswers = async (req, res) => {
     }
     const existingResult = await QuizResult.findOne({ quiz: quizId, student: studentId });
 
-if (existingResult) {
-  throw new Error('You already attempted the quiz.');
-}
+    if (existingResult) {
+      throw new Error('You already attempted the quiz.');
+    }
     const newResult = await QuizResult.create({
       quiz: quizId,
       student: studentId,
@@ -434,6 +448,167 @@ const getStudentQuizResults = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch quiz results.' });
   }
 };
+const createAssignment = async (req, res) => {
+  try {
+    const { title,totalMarks } = req.body;
+    const batch = req.params.id
+    const pdf = req.file.path
+    if (!title || !pdf || !batch) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const assignment = await Assignment.create({ title, pdf, batch,totalMarks });
+    res.status(201).json({ message: 'Assignment created successfully', assignment });
+  } catch (error) {
+    console.error('Error creating assignment:', error);
+    res.status(500).json({ message: 'Server error while creating assignment' });
+  }
+};
 
 
-module.exports = {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse,getCoursesByBatch,verifyPassword,pdfUpload,getPdfByBatchId,uploadQuiz,viewQuizTeacher,submitQuizAnswers,getStudentQuizResults};
+const submitAssignment = async (req, res) => {
+  try {
+    const batchId = req.params.id;
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authorization token missing' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    // return console.log(token)
+    const cleanToken = token.trim().replace(/^"|"$/g, '');
+
+
+    const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
+    const studentId = decoded.id;
+    const { assignmentId } = req.body // assuming student is authenticated
+    const pdfPath = req.file.path;
+
+    // Check for duplicate submission
+    const existing = await AssignmentSubmission.findOne({ assignment: assignmentId, student: studentId });
+    if (existing) {
+      return res.status(401).json({ message: 'You have already submitted this assignment.' });
+    }
+
+    const submission = new AssignmentSubmission({
+      assignment: assignmentId,
+      student: studentId,
+      pdf: pdfPath,
+      batchId: batchId
+
+    });
+
+    await submission.save();
+    res.status(201).json({ message: 'Assignment submitted successfully!', submission });
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+const getAssignmentResult = async (req, res) => {
+
+   const batchId = req.params.id;
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Authorization token missing' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  // return console.log(token)
+  const cleanToken = token.trim().replace(/^"|"$/g, '');
+
+
+  const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET);
+  const studentId = decoded.id;
+  const { assignmentId } = req.body;
+  if (!assignmentId || !studentId) {
+    return res.status(400).json({ message: 'Missing required parameters' });
+  }
+
+  try {
+    const submission = await AssignmentSubmission.findOne({
+      assignment: assignmentId,
+      student: studentId,
+      batchId: batchId
+    })
+      .populate('assignment', 'title');
+
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' });
+    }
+
+    res.status(200).json({
+      assignmentTitle: submission.assignment?.title || 'Untitled',
+      marks: submission.marks,
+      status: submission.status,
+      submittedAt: submission.submittedAt
+    });
+  } catch (error) {
+    console.error('Error fetching assignment result:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const getAllSubmissionsByAssignmentId = async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+
+    if (!assignmentId) {
+      return res.status(400).json({ error: 'assignmentId is required' });
+    }
+
+    const submissions = await AssignmentSubmission.find({ assignment: assignmentId })
+      .populate('student', 'name email')  // populate student name and email
+      .populate('assignment', 'title')   // optional: populate assignment title
+      .sort({ submittedAt: -1 });        // newest first
+
+    if (!submissions.length) {
+      return res.status(404).json({ message: 'No submissions found for this assignment' });
+    }
+
+    return res.status(200).json({ submissions });
+
+  } catch (error) {
+    console.error('Error fetching submissions:', error);
+    return res.status(500).json({ error: 'Server error while fetching submissions' });
+  }
+};
+
+const gradeAssignmentSubmission = async (req, res) => {
+  const { submissionId } = req.params;
+  const { marks } = req.body;
+
+  try {
+    // Validate marks
+    if (marks == null || isNaN(marks) || marks < 0) {
+      return res.status(400).json({ message: 'Marks must be a valid non-negative number.' });
+    }
+
+    const submission = await AssignmentSubmission.findById(submissionId);
+
+    if (!submission) {
+      return res.status(404).json({ message: 'Assignment submission not found.' });
+    }
+
+    // Update marks and status
+    submission.marks = marks;
+    submission.status = 'graded';
+
+    await submission.save();
+
+    res.status(200).json({
+      message: 'Marks assigned successfully.',
+      submission
+    });
+  } catch (error) {
+    console.error('Error grading submission:', error);
+    res.status(500).json({ message: 'Server error while grading submission.' });
+  }
+};
+
+
+module.exports = { createBatch, getAllBatch, getAllBatchesByTeacher, addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId, uploadQuiz, viewQuizTeacher, submitQuizAnswers, getStudentQuizResults, createAssignment, submitAssignment, getAssignmentByBatchId,getAssignmentResult,getAllSubmissionsByAssignmentId,gradeAssignmentSubmission };

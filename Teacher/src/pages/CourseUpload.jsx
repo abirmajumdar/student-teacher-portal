@@ -21,7 +21,9 @@ const CourseUpload = () => {
     const [pdfTitle, setPdfTitle] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-
+    const [assignmentTitle,setAssignmentTitle] = useState('')
+    const [assignmentFile,setAssignmentFile]=useState(null)
+    const [totalMarks,setTotalMarks] = useState('')
     // Quiz States
     const [quizTitle, setQuizTitle] = useState('');
     const [questions, setQuestions] = useState([
@@ -84,6 +86,10 @@ const CourseUpload = () => {
     const handlePdfChange = (e) => {
         setPdfFile(e.target.files[0]);
     };
+    const handleassignmentChange = (e) => {
+        setAssignmentFile(e.target.files[0]);
+    };
+
 
     const handlePdfSubmit = async (e) => {
         e.preventDefault();
@@ -106,6 +112,32 @@ const CourseUpload = () => {
         }
     };
 
+    const handleAssignmentSubmit=async(e)=>{
+         e.preventDefault();
+        
+        if (!assignmentFile) {
+            toast.error('Please select a PDF file.', { theme: 'colored' });
+            return;
+        }
+         if (!totalMarks || ! assignmentTitle) {
+            toast.error('All fields are required *', { theme: 'colored' });
+            return;
+        }
+
+        const pdfForm = new FormData();
+        pdfForm.append('title', assignmentTitle);
+        pdfForm.append('pdf', assignmentFile);
+        pdfForm.append('totalMarks',totalMarks)
+
+        try {
+            const res = await axios.post(`${BASE_URL}/batch/upload-assignment/${id}`, pdfForm, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            toast.success('Assignment uploaded successfully!', { theme: 'colored' });
+        } catch (err) {
+            toast.error('Failed to upload PDF.', { theme: 'colored' });
+        }
+    }
     const handleQuizSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -149,20 +181,19 @@ const CourseUpload = () => {
 
             {/* Tab Buttons */}
             <div className="flex justify-center space-x-4 mb-4 flex-wrap">
-                {['video', 'pdf', 'text', 'quiz'].map((tab) => (
+                {['video', 'pdf', 'assignment', 'quiz'].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => handleTabChange(tab)}
-                        className={`px-4 py-2 rounded-md font-medium ${
-                            activeTab === tab
+                        className={`px-4 py-2 rounded-md font-medium ${activeTab === tab
                                 ? 'bg-indigo-600 text-white'
                                 : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                        }`}
+                            }`}
                     >
                         {{
                             video: '🎥 Videos',
                             pdf: '📄 PDFs',
-                            text: '📝 Assignment',
+                            assignment: '📝 Assignment',
                             quiz: '❓ Quiz',
                         }[tab]}
                     </button>
@@ -274,7 +305,39 @@ const CourseUpload = () => {
                         📄 Upload PDF
                     </button>
                 </form>
-            ) : (
+            ) : activeTab === 'assignment' ?(
+                <form onSubmit={handleAssignmentSubmit} className="space-y-4">
+                    <h3 className="text-lg font-bold text-indigo-600">Upload PDF Only</h3>
+                    <input
+                        type="text"
+                        placeholder="Assignment Title"
+                        value={assignmentTitle}
+                        onChange={(e) => setAssignmentTitle(e.target.value)}
+                        required
+                        className="w-full border px-3 py-2 rounded-md"
+                    />
+                    <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleassignmentChange}
+                        className="w-full border px-3 py-2 rounded-md"
+                        required
+                    />
+                    <input
+                        value={totalMarks}
+                        onChange={(e)=>{setTotalMarks(e.target.value)}}
+                        placeholder='total marks'
+                        className="w-full border px-3 py-2 rounded-md"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        className="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md"
+                    >
+                        📄 Upload Assignment
+                    </button>
+                </form>
+            ) :(
                 <form onSubmit={handleCourseSubmit} className="space-y-4 border-b pb-6">
                     <h3 className="text-lg font-bold text-indigo-600">Add {activeTab === 'text' ? 'Assignment' : 'Course'}</h3>
                     <input
@@ -288,15 +351,16 @@ const CourseUpload = () => {
                     />
 
                     {activeTab === 'text' ? (
-                        <textarea
-                            name="textContent"
-                            rows="4"
-                            placeholder="Enter assignment text"
-                            value={formData.textContent}
-                            onChange={handleTextChange}
-                            required
-                            className="w-full border px-3 py-2 rounded-md"
-                        />
+                        <>
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={handleFileChange}
+                                required
+                                className="w-full border px-3 py-2 rounded-md"
+                            />
+                            <p className="text-sm text-gray-600">Upload assignment in PDF format.</p>
+                        </>
                     ) : (
                         <input
                             type="file"
@@ -320,9 +384,8 @@ const CourseUpload = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full py-2 rounded-md text-white font-semibold ${
-                            loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
-                        }`}
+                        className={`w-full py-2 rounded-md text-white font-semibold ${loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
+                            }`}
                     >
                         {loading ? 'Uploading...' : `Upload ${activeTab === 'text' ? 'Assignment' : 'Course'}`}
                     </button>

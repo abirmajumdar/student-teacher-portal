@@ -21,7 +21,7 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 
 const genarateToken=(id)=>{
-  const token =jwt.sign({id},process.env.JWT_SECRET,{expiresIn : '1h'})
+  const token =jwt.sign({id},process.env.JWT_SECRET)
   return token
 }
 // Send 

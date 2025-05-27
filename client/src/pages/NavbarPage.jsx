@@ -19,8 +19,8 @@ const Navbar = () => {
    
     return (
         <>
-        <nav className="bg-white shadow">
-            <div className="px-6 py-4 mx-auto md:flex md:justify-between md:items-center">
+        <nav className="bg-slate-200 shadow">
+            <div className="px-6 py-4  mx-auto md:flex md:justify-between md:items-center">
                 {/* Logo + Toggle */}
                 <div className="flex items-center justify-between">
                     <Link to="/">
