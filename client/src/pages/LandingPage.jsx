@@ -13,7 +13,7 @@ import 'react-phone-number-input/style.css'
 import { useRef } from "react";
 import axios from 'axios'
 import { ToastContainer, toast, Bounce } from 'react-toastify';
-import BASE_URL from '../../../Teacher/utils/utils';
+import BASE_URL from '../utils/utils.js';
 import { useNavigate } from 'react-router-dom';
 
 const countryOptions = [

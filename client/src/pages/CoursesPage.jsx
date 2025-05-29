@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import BASE_URL from '../../../Teacher/utils/utils.js';
+import BASE_URL from '../utils/utils.js';
 import { FaVideo, FaFileAlt, FaFilePdf, FaTasks, FaQuestion, FaUpload } from 'react-icons/fa';
 import Navbar from './NavbarPage.jsx';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'

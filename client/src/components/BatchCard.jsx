@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import axios from "axios";
-import BASE_URL from "../../../Teacher/utils/utils";
+import BASE_URL from "../utils/utils.js";
 
 const BatchCard = ({ batch }) => {
   const navigate = useNavigate();
