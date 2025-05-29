@@ -60,7 +60,6 @@ export default function CoursesPage() {
         setAssignmentLoading(true);
         const res = await axios.get(`${BASE_URL}/batch/get-assignments-by-batchid/${id}`);
         setAssignments(res.data.assignments);
-        console.log(res.data.pdfs)
       } catch (error) {
         console.error('Error fetching PDFs:', error);
       } finally {

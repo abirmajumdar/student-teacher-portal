@@ -4,13 +4,13 @@ import { BrowserRouter,Routes,Route } from 'react-router-dom'
 import CoursesPage from './pages/CoursesPage'
 
 function App() {
-
+  const batchToken = localStorage.getItem('batchToken')
   return (
     <>
     <BrowserRouter>
     <Routes>
       <Route path='/' element={<LandingPage/>}/>
-      <Route path='/view-courses/:id' element={<CoursesPage/>}/>
+      <Route path='/view-courses/:id'  element={batchToken? <CoursesPage/>:<LandingPage/>}/>
     </Routes>
       
     </BrowserRouter>

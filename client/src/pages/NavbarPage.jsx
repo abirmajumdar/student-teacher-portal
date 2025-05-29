@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png'
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -25,12 +26,13 @@ const Navbar = () => {
                 <div className="flex items-center justify-between">
                     <Link to="/">
                         <img
-                            className="w-auto h-6 sm:h-7"
-                            src="https://merakiui.com/images/full-logo.svg"
+                            className="w-auto h-6 sm:h-10"
+                            src={logo}
                             alt="Logo"
                         />
+                        
                     </Link>
-
+                    <h1 className='p-2 font-bold text-gray-700 text-2xl'>Tuteva</h1>
                     <div className="flex lg:hidden">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
@@ -54,16 +56,16 @@ const Navbar = () => {
                         <Link to="/" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
                             Home
                         </Link>
-                        <Link to="/batches" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
+                        <Link to="/" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
                             Batches
                         </Link>
-                        <Link to="/about" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
+                        <Link to="/" className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500">
                             About
                         </Link>
 
                         {user && (
                             <div className="relative">
-                                <button
+                                {/* <button
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
                                     className="mt-2 md:mt-0 text-gray-700 hover:text-blue-500 focus:outline-none"
                                 >
@@ -82,7 +84,7 @@ const Navbar = () => {
                                                 </Link>
                                             </>
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         )}
                     </div>

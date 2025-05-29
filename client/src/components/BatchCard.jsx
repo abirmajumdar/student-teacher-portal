@@ -39,30 +39,34 @@ const BatchCard = ({ batch }) => {
     try {
       const response = await axios.post(`${BASE_URL}/batch/verify-batch-password`, {
         batchId: batch._id,
-        password:batchPassword,
+        password: batchPassword,
       });
-      if (response.status==200) {
+      if (response.status == 200) {
 
 
 
 
-        
+
         //success toast
 
 
         toast.success('Batch password verified successfully!', {
-    position: "top-center",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light",
-    onClose:()=>{setShowModal(false);
-        navigate(`/view-courses/${batch._id}`);}
-  });
-        
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          onClose: () => {
+            setShowModal(false);
+            navigate(`/view-courses/${batch._id}`);
+            localStorage.setItem('batchToken',batch._id)
+            window.location.reload();
+          }
+        });
+
       } else {
         toast.error("Incorrect batch password", {
           position: "top-center",
