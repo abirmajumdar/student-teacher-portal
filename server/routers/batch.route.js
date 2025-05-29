@@ -1,5 +1,5 @@
 const express = require('express')
-const {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId,uploadQuiz,viewQuizTeacher,submitQuizAnswers,getStudentQuizResults,createAssignment,submitAssignment,getAssignmentByBatchId, getAssignmentResult, getAllSubmissionsByAssignmentId,gradeAssignmentSubmission} = require('../controllers/batch.controller.js')
+const {createBatch,getAllBatch,getAllBatchesByTeacher,addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId,uploadQuiz,viewQuizTeacher,submitQuizAnswers,getStudentQuizResults,createAssignment,submitAssignment,getAssignmentByBatchId, getAssignmentResult, getAllSubmissionsByAssignmentId,gradeAssignmentSubmission,getQuizResultsByID} = require('../controllers/batch.controller.js')
 const multer  = require('multer')
 const fileUpload = require('express-fileupload');
 
@@ -43,4 +43,6 @@ router.post('/submit-assignment/:id',upload.single("pdf"),submitAssignment)
 router.post('/get-assignment-result/:id',getAssignmentResult)
 router.get('/get-all-assignment-submission-by-id/:assignmentId',getAllSubmissionsByAssignmentId)
 router.post('/submissions/:submissionId/grade',gradeAssignmentSubmission)
+router.get('/get-quiz-result-by-id/:quizId',getQuizResultsByID)
+
 module.exports = router

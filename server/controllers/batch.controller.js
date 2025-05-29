@@ -610,5 +610,18 @@ const gradeAssignmentSubmission = async (req, res) => {
   }
 };
 
+const getQuizResultsByID = async (req, res) => {
+  try {
+    const {quizId} = req.params
+    const results = await QuizResult.find({quiz:quizId})
+      .populate('student', 'name email') // Only select needed fields
+      .populate('quiz', 'title') // Assuming quiz has a title field
+      .sort({ createdAt: -1 }); // Recent first
 
-module.exports = { createBatch, getAllBatch, getAllBatchesByTeacher, addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId, uploadQuiz, viewQuizTeacher, submitQuizAnswers, getStudentQuizResults, createAssignment, submitAssignment, getAssignmentByBatchId,getAssignmentResult,getAllSubmissionsByAssignmentId,gradeAssignmentSubmission };
+    res.status(200).json({ success: true, results });
+  } catch (err) {
+    console.error('Error fetching quiz results:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+module.exports = { createBatch, getAllBatch, getAllBatchesByTeacher, addCourse, getCoursesByBatch, verifyPassword, pdfUpload, getPdfByBatchId, uploadQuiz, viewQuizTeacher, submitQuizAnswers, getStudentQuizResults, createAssignment, submitAssignment, getAssignmentByBatchId,getAssignmentResult,getAllSubmissionsByAssignmentId,gradeAssignmentSubmission ,getQuizResultsByID};

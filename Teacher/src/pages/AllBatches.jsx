@@ -22,13 +22,13 @@ const AllBatches = () => {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="mx-auto">
         <Navbar/>
         <br />
       <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
         All Batches
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {batches.map((batch) => (
           <AllBatchCard key={batch._id} batch={batch} />
         ))}

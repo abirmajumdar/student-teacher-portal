@@ -6,6 +6,7 @@ import CourseUpload from './pages/CourseUpload'
 import CoursesPage from './pages/CoursesPage'
 import AllBatches from './pages/AllBatches'
 import AllAssignmentPage from './pages/AllAssignmentPage'
+import StudentQuizAnalisisDashboardPage from './pages/StudentQuizAnalisisDashboardPage'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -24,6 +25,7 @@ function App() {
         <Route path='/view-courses/:id' element={<CoursesPage/>} />
         <Route path='/all-batches' element={<AllBatches/>} />
         <Route path='/all-assignments-by-Id/:id' element={<AllAssignmentPage/>} />
+        <Route path='/student-quiz-report/:id' element={<StudentQuizAnalisisDashboardPage/>} />
         
       </Routes>
     </BrowserRouter>
