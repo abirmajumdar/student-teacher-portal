@@ -12,6 +12,8 @@ export default function AuthPage() {
   const [fullname,setFullname]= useState('')
   const [email,setEmail]= useState('')
   const [password,setPassword]= useState('')
+  const[confirmPassword,setConfirmPassword]= useState('')
+
   const navigate = useNavigate()
 
   const submitHandler = async (e) => {
@@ -31,7 +33,9 @@ export default function AuthPage() {
           progress: undefined,
           theme: "dark",
           transition: Bounce,
-          onClose:()=>{navigate('/')}
+          onClose:()=>{navigate('/')
+             window.location.reload();
+          }
         });
         
         
@@ -53,7 +57,9 @@ export default function AuthPage() {
 
     }
     else {
-      //password == cnf password
+      if(password != cnf){
+
+      }
       try{
         const res = await axios.post(`${BASE_URL}/auth/teacher/signup`,{fullname,email,password})
         localStorage.setItem('token',res.data.token)
@@ -68,7 +74,9 @@ export default function AuthPage() {
           progress: undefined,
           theme: "dark",
           transition: Bounce,
-          onClose:()=>{navigate('/')}
+          onClose:()=>{navigate('/')
+             window.location.reload();
+          }
         });
       }
       catch(e){
@@ -204,6 +212,8 @@ export default function AuthPage() {
           />
           <input
             type="password"
+            value={confirmPassword}
+            onChange={(e)=>{setConfirmPassword(e.target.value)}}
             placeholder="Confirm Password"
             className="w-full px-4 py-2 rounded bg-white/30 focus:outline-none"
             required
