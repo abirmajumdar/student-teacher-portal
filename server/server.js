@@ -4,7 +4,7 @@ const cors = require('cors')
 const mongoose = require('mongoose');
 const router = require("./routers/otp.routes.js");
 const cloudinary = require('cloudinary').v2
-const fileUpload = require('express-fileupload');
+const fileUpload =require('express-fileupload') ;
 const path = require('path')
 
 const app = express()
@@ -24,24 +24,17 @@ const PORT = process.env.PORT || 8080
 const MONGO_URI = process.env.MONGO_URI
 mongoose.connect(MONGO_URI).then(() => {
     console.log("database connected")
-    app.use('/otp', router)
-
-    app.use('/auth/teacher', require('./routers/teacherauth.route.js'))
-    app.use('/batch', require('./routers/batch.route.js'))
-    app.use('/', (req, res) => {
-        res.status(200).json({ message: 'server running' })
-    })
 }).catch((e) => {
     console.log(e)
 })
 
-// app.use('/otp', router)
+app.use('/otp', router)
 
-// app.use('/auth/teacher', require('./routers/teacherauth.route.js'))
-// app.use('/batch', require('./routers/batch.route.js'))
-// app.use('/',(req,res)=>{
-//     res.status(200).json({message:'server running'})
-// })
+app.use('/auth/teacher', require('./routers/teacherauth.route.js'))
+app.use('/batch', require('./routers/batch.route.js'))
+app.use('/',(req,res)=>{
+    res.status(200).json({message:'server running'})
+})
 // Configuration
 cloudinary.config({
     cloud_name: 'dfdazric5',
