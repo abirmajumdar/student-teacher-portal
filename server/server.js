@@ -19,9 +19,6 @@ dotenv.config()
 
 const PORT = process.env.PORT || 8080
 
-app.listen(PORT, () => {
-    console.log("server is running on " + PORT)
-})
 
 
 const MONGO_URI = process.env.MONGO_URI
@@ -44,3 +41,7 @@ cloudinary.config({
     api_key: '863459796595879',
     api_secret: 'fBGoG3DSTeMhmQI531lphOscEWI' // Click 'View API Keys' above to copy your API secret
 });
+
+app.listen(PORT, () => {
+    console.log("server is running on " + PORT)
+})
