@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BASE_URL from '../../utils/utils.js';
+import BASE_URL from '../utils/utils.js';
 import {ToastContainer,toast,Bounce} from 'react-toastify'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'

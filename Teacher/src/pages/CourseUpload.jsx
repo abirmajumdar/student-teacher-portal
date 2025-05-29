@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import BASE_URL from '../utils/utils';
+import BASE_URL from '../utils/utils.js';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 

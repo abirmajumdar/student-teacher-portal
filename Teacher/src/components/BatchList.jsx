@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BatchCard from "./BatchCard"; // assuming in same folder
-import BASE_URL from "../utils/utils";
+import BASE_URL from "../utils/utils.js";
 import axios from "axios";
 
 const BatchList = () => {

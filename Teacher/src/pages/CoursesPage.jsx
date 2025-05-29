@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import BASE_URL from '../utils/utils';
+import BASE_URL from '../utils/utils.js';
 import { FaVideo, FaFileAlt, FaFilePdf, FaTasks, FaQuestion } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';

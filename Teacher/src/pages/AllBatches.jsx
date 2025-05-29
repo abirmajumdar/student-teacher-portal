@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AllBatchCard from "../components/AllBatchCard"; // assuming in same folder
-import BASE_URL from "../utils/utils";
+import BASE_URL from "../utils/utils.js";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 const AllBatches = () => {
