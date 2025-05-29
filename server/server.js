@@ -35,7 +35,9 @@ app.use('/otp', router)
 
 app.use('/auth/teacher', require('./routers/teacherauth.route.js'))
 app.use('/batch', require('./routers/batch.route.js'))
-
+app.use('/',(req,res)=>{
+    res.status.json({message:'server running'})
+})
 // Configuration
 cloudinary.config({
     cloud_name: 'dfdazric5',
