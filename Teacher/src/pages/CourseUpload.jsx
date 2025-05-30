@@ -74,7 +74,7 @@ const CourseUpload = () => {
                 autoClose: 4000,
                 theme: 'dark',
                 transition: Bounce,
-                onClose: () => navigate('/dashboard'),
+                onClose: () => navigate('/'),
             });
         } catch (err) {
             setError('Failed to add course.');
