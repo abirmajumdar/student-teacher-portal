@@ -44,7 +44,7 @@ function UploadModal(props) {
         transition: Bounce,
         onClose: () => {
           props.closeModal()
-          navigate('/dashboard')
+          navigate('/')
         }
         
       });
