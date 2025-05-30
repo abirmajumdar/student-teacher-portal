@@ -73,7 +73,7 @@ export default function AuthPage() {
       try{
         const res = await axios.post(`${BASE_URL}/auth/teacher/signup`,{fullname,email,password})
         localStorage.setItem('token',res.data.token)
-        localStorage.setItem('teacher',res.data.teacher)
+        localStorage.setItem('teacher',JSON.stringify(res.data.teacher.email) )
         toast.success(res.data.message, {
           position: "top-center",
           autoClose: 5000,
