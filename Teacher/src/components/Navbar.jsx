@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import UploadModal from './UploadModal';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png'
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -33,11 +34,11 @@ const Navbar = () => {
                     <Link to="/">
                         <img
                             className="w-auto h-6 sm:h-7"
-                            src="https://merakiui.com/images/full-logo.svg"
+                            src={logo}
                             alt="Logo"
                         />
                     </Link>
-
+                    <h1 className='p-2 font-bold text-gray-700 text-2xl'>Tuteva</h1>
                     <div className="flex lg:hidden">
                         <button
                             onClick={() => setIsOpen(!isOpen)}

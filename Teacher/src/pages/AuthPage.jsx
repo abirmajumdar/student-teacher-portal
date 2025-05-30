@@ -57,8 +57,18 @@ export default function AuthPage() {
 
     }
     else {
-      if(password != cnf){
-
+      if(password != confirmPassword){
+        toast.error('Password and confirm password does not match', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        });
       }
       try{
         const res = await axios.post(`${BASE_URL}/auth/teacher/signup`,{fullname,email,password})
