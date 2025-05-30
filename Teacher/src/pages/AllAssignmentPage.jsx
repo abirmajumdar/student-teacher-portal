@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import BASE_URL from '../utils/utils';
 
 const AllAssignmentPage = () => {
   const { id } = useParams(); // ID from URL
@@ -11,7 +12,7 @@ const AllAssignmentPage = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/batch/get-all-assignment-submission-by-id/${id}`);
+        const res = await axios.get(`${BASE_URL}/batch/get-all-assignment-submission-by-id/${id}`);
         setSubmissions(res.data.submissions);
       } catch (error) {
         console.error('Error fetching submissions:', error);
